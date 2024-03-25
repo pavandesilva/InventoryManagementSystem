@@ -23,13 +23,116 @@ public class Login extends javax.swing.JFrame {
      */
     public Login() {
         initComponents();
-//        otherComponents();
+        otherComponents();
     }
 
-    
+    private void login() {
+        try {
+            sql = "SELECT login.employeeid, login.username, login.password, login.status, employee.firstname, employee.lastname, employee.type, employee.status FROM login INNER JOIN employee ON login.employeeid=employee.employeeid WHERE login.username='" + usernameTxt.getText() + "'";
+            rs = DB.search(sql);
+            if (rs.next()) {
+                if (rs.getBoolean("employee.status")) {
+                    if (rs.getString("username").equals(usernameTxt.getText())) {
+                        String password = passwordTxt.getText();
+                        password = MD5.getMd5(password);
+                        if (rs.getString("password").equals(password)) {
+                            String role = rs.getString("type");
+                            UserDetails details = new UserDetails();
+                            details.setId(rs.getString("employeeid"));
+                            details.setFname(rs.getString("firstname"));
+                            details.setLname(rs.getString("lastname"));
+                            details.setRole(role);
 
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+                            if (rs.getBoolean("login.status")) {
+                                switch (role) {
+                                    case "Admin":
+                                        new ManagerHome(details).setVisible(true);
+                                        break;
+                                    case "Cashier":
+                                        new InvoiceView(details).setVisible(true);
+                                        break;
+                                    case "Manager":
+                                        new ManagerHome(details).setVisible(true);
+                                        break;
+                                    case "Store-Keeper":
+                                        new grn(details).setVisible(true);
+                                        break;
+                                    default:
+                                        JOptionPane.showMessageDialog(this, "Couldn't login. Invalid user type", "Error", JOptionPane.ERROR_MESSAGE);
+                                        break;
+                                }
+                                this.dispose();
+                            } else {
+                                JOptionPane.showMessageDialog(this, "Your login access is BLOCKED. Contact Manager for further steps.", "Login Error", JOptionPane.WARNING_MESSAGE);
+                                usernameTxt.setText(null);
+                                passwordTxt.setText(null);
+                                usernameTxt.grabFocus();
+                            }
+                        } else {
+//                            System.out.println("1");
+                            error();
+                        }
+                    } else {
+//                        System.out.println("2");
+                        error();
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Employee is BLOCKED. Contact Manager for further steps.", "Login Error", JOptionPane.WARNING_MESSAGE);
+                    usernameTxt.setText(null);
+                    passwordTxt.setText(null);
+                    usernameTxt.grabFocus();
+                }
+            } else {
+                error();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Login error" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void error() {
+        usernameTxt.setText(null);
+        passwordTxt.setText(null);
+        JOptionPane.showMessageDialog(this, "Invalid Login details.", "Error", JOptionPane.ERROR_MESSAGE);
+        usernameTxt.grabFocus();
+    }
+
+    private void emptyCheck() {
+        if (usernameTxt.getText().equals("")) {
+            JOptionPane.showMessageDialog(this, "Username cannot be empty");
+            usernameTxt.grabFocus();
+        } else if (passwordTxt.getText().equals("")) {
+            JOptionPane.showMessageDialog(this, "Password cannot be empty");
+            passwordTxt.grabFocus();
+        } else {
+            login();
+        }
+    }
+
+    private void otherComponents() {
+        try {
+            setIcon(usernameIconLabel, "data/username.png");
+            setIcon(passwordIconLabel, "data/password.png");
+
+//            Initial initial = new Initial();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+    }
+
+    private void setIcon(javax.swing.JLabel label, String imgPath) {
+
+        try {
+            URL path = this.getClass().getResource(imgPath);
+            FileInputStream imgStream = new FileInputStream(path.getPath());
+            Image img = ImageIO.read(imgStream);
+            img = img.getScaledInstance(label.getWidth(), label.getHeight(), Image.SCALE_SMOOTH);
+            label.setIcon(new ImageIcon(img));
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+  
     private void initComponents() {
 
         jLayeredPane1 = new javax.swing.JLayeredPane();
