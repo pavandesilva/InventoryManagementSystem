@@ -69,11 +69,9 @@ public class Login extends javax.swing.JFrame {
                                 usernameTxt.grabFocus();
                             }
                         } else {
-//                            System.out.println("1");
-                            error();
+                          error();
                         }
                     } else {
-//                        System.out.println("2");
                         error();
                     }
                 } else {
@@ -302,7 +300,7 @@ public class Login extends javax.swing.JFrame {
 
         pack();
         setLocationRelativeTo(null);
-    }// </editor-fold>//GEN-END:initComponents
+    }// </editor-fold>                        
 
     private void closeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeButtonActionPerformed
         this.dispose();
