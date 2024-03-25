@@ -16,12 +16,12 @@ import javax.swing.JOptionPane;
  *
  * @author Pavan De Silva
  */
-public class Login1 extends javax.swing.JFrame {
+public class Login extends javax.swing.JFrame {
 
     /**
      * Creates new form Login
      */
-    public Login1() {
+    public Login() {
         initComponents();
         otherComponents();
     }
@@ -90,7 +90,48 @@ public class Login1 extends javax.swing.JFrame {
         }
     }
 
-    
+    private void error() {
+        usernameTxt.setText(null);
+        passwordTxt.setText(null);
+        JOptionPane.showMessageDialog(this, "Invalid Login details.", "Error", JOptionPane.ERROR_MESSAGE);
+        usernameTxt.grabFocus();
+    }
+
+    private void emptyCheck() {
+        if (usernameTxt.getText().equals("")) {
+            JOptionPane.showMessageDialog(this, "Username cannot be empty");
+            usernameTxt.grabFocus();
+        } else if (passwordTxt.getText().equals("")) {
+            JOptionPane.showMessageDialog(this, "Password cannot be empty");
+            passwordTxt.grabFocus();
+        } else {
+            login();
+        }
+    }
+
+    private void otherComponents() {
+        try {
+            setIcon(usernameIconLabel, "data/username.png");
+            setIcon(passwordIconLabel, "data/password.png");
+
+//            Initial initial = new Initial();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+    }
+
+    private void setIcon(javax.swing.JLabel label, String imgPath) {
+
+        try {
+            URL path = this.getClass().getResource(imgPath);
+            FileInputStream imgStream = new FileInputStream(path.getPath());
+            Image img = ImageIO.read(imgStream);
+            img = img.getScaledInstance(label.getWidth(), label.getHeight(), Image.SCALE_SMOOTH);
+            label.setIcon(new ImageIcon(img));
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -307,21 +348,23 @@ public class Login1 extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Login1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Login1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Login1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Login1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Login1().setVisible(true);
+                new Login().setVisible(true);
             }
         });
     }
