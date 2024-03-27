@@ -33,7 +33,104 @@ public class CustomerManagement extends javax.swing.JFrame {
     /**
      * Creates new form AddSystemUser
      */
-    
+     public CustomerManagement() {
+        initComponents();
+        otherComponents();
+        generateSystemUserID();
+        startTimer();
+    }
+
+    public CustomerManagement(UserDetails details) {
+        initComponents();
+        this.details = details;
+        this.log = new StatLogging();
+        userLabel.setText(details.getFname());
+        otherComponents();
+        generateSystemUserID();
+        startTimer();
+        log.infoLog(details, "Logged into Customer management");
+    }
+
+    private void startTimer() {
+        datetimeLabel.setText(DateFormat.getDateTimeInstance().format(new Date()));
+        Timer t = new Timer(500, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                datetimeLabel.setText(DateFormat.getDateTimeInstance().format(new Date()));
+            }
+        });
+        t.setRepeats(true);
+        t.setCoalesce(true);
+        t.setInitialDelay(0);
+        t.start();
+    }
+
+    private void checkData() {
+        if (customerIdTxt.getText().equals("")) {
+            components.error(this, "Employeeid cannot be empty");
+        } else if (firstnameTxt.getText().equals("")) {
+            components.error(this, "Firstname cannot be empty");
+        } else if (lastnameTxt.getText().equals("")) {
+            components.error(this, "Lastname vannot be empty");
+        } else if (nicTxt.getText().equals("")) {
+            components.error(this, "NIC cannot be empty");
+        } else if (birthDateChooser.getDate().equals("")) {
+            components.error(this, "Birthday cannot be empty");
+        } else if (addressTxt.getText().equals("")) {
+            components.error(this, "Address cannot be empty");
+        } else if (emailTxt.getText().equals("")) {
+            components.error(this, "email cannot be empty");
+        } else if (contactNoTxt.getText().equals("")) {
+            components.error(this, "Contact number cannot be empty");
+        } else if (contactNoTxt.getText().length() != 11) {
+            components.error(this, "Invalid contact number");
+        } else {
+            addUser();
+        }
+    }
+
+    private void setStatus(String s) {
+        try {
+            sql = "UPDATE customer SET status= " + s + " WHERE customerid='" + rs.getString("customreid") + "'";
+            DB.addData(sql);
+            log.infoLog(details, "Customer status changed");
+            components.infoMessage(this, "User's access status successfully changed");
+            newUserCycle();
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+        }
+    }
+
+
+//    private void numberFilter(KeyEvent evt, JLabel label){
+//        
+//        if (evt.getKeyChar() >= 'a' && evt.getKeyChar() <= 'z' || evt.getKeyChar() >= 'A' && evt.getKeyChar() <= 'Z' || evt.getKeyCode()== KeyEvent.VK_BACK_SPACE){
+//            label.setEditable(true);
+//        } else {
+//            label.setEditable(false);
+//        }
+//    }
+    private void otherComponents() {
+        try {
+//            URL path = this.getClass().getResource("data/EMBackground.jpg");
+//            File imageFile = new File(path.getFile());
+//            Image img = ImageIO.read(imageFile);
+//            img = img.getScaledInstance(backgroundLabel.getWidth(), backgroundLabel.getHeight(), Image.SCALE_SMOOTH);
+//            backgroundLabel.setIcon(new ImageIcon(img));
+//            backgroundLabel.setVisible(false);
+//            backButton.setVisible(false);
+            statButton.setVisible(false);
+
+            components = new SystemComponents();
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+        }
+    }
+
+    private void generateSystemUserID() {
+        customerIdTxt.setText("" + components.generateID("customer"));
+        nicTxt.grabFocus();
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
