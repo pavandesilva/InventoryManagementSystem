@@ -1,4 +1,4 @@
-package Frames;
+package view;
 
 import common.DB;
 import common.SystemComponents;
@@ -101,6 +101,102 @@ public class CustomerManagement extends javax.swing.JFrame {
         }
     }
 
+    private void addUser() {
+        int stat = 0;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd / MM / yyyy");
+            String dob = sdf.format(birthDateChooser.getDate());
+
+            if (activeRadioButton.isSelected()) {
+                stat = 1;
+            }
+
+            sql = "INSERT INTO customer (customerid, firstname, lastname, nic, birthday, address, email, mobile, status) VALUES ('" + customerIdTxt.getText() + "', '" + firstnameTxt.getText() + "','" + lastnameTxt.getText() + "' ,'" + nicTxt.getText() + "' ,'" + dob + "' ,'" + addressTxt.getText() + "' ,'" + emailTxt.getText() + "','" + contactNoTxt.getText() + "', '" + stat + "')";
+            DB.addData(sql);
+            log.infoLog(details, "New customer added");
+            components.infoMessage(this, "New customer successfully added");
+            newUserCycle();
+        } catch (Exception e) {
+            components.error(this, e.getMessage());
+        }
+    }
+
+    private void updateData() {
+        int stat = 0;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd / MM / yyyy");
+            String dob = sdf.format(birthDateChooser.getDate());
+
+            if (activeRadioButton.isSelected()) {
+                stat = 1;
+            }
+
+            sql = "UPDATE customer SET firstname='" + firstnameTxt.getText() + "', lastname='" + lastnameTxt.getText() + "', nic='" + nicTxt.getText() + "', birthday='" + dob + "', address='" + addressTxt.getText() + "', email='" + emailTxt.getText() + "', mobile='" + contactNoTxt.getText() + "', status='" + stat + "' WHERE customerid= '" + customerIdTxt.getText() + "'";
+            DB.addData(sql);
+            log.infoLog(details, "Customer details updated");                        
+            components.infoMessage(this, "User's data succesfully updated");
+
+            customerIdTxt.setEditable(true);
+            newUserCycle();
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+            components.error(this, e.getMessage());
+        }
+    }
+
+    private void newUserCycle() {
+        generateSystemUserID();
+        activeRadioButton.setSelected(true);
+        firstnameTxt.setText(null);
+        lastnameTxt.setText(null);
+        contactNoTxt.setText(null);
+        birthDateChooser.setDate(null);
+        addressTxt.setText(null);
+        nicTxt.setText(null);
+        emailTxt.setText(null);
+//        backButton.setVisible(false);
+        addUserButton.setVisible(true);
+        statButton.setVisible(false);
+    }
+
+    private void setData() {
+        try {
+            sql = "SELECT * FROM customer WHERE customerid='" + customerIdTxt.getText() + "'";
+
+            rs = DB.search(sql);
+            if (rs.next()) {
+                firstnameTxt.setText(rs.getString("firstname"));
+                lastnameTxt.setText(rs.getString("lastname"));
+                contactNoTxt.setText(rs.getString("mobile"));
+                addressTxt.setText(rs.getString("address"));
+                String date = rs.getString("birthday");
+                SimpleDateFormat sdf = new SimpleDateFormat("MM / dd / yyyy");
+                Date bday = sdf.parse(date);
+                birthDateChooser.setDate(bday);
+                nicTxt.setText(rs.getString("nic"));
+                emailTxt.setText(rs.getString("email"));
+
+                if (rs.getBoolean("status")) {
+                    activeRadioButton.setSelected(true);
+                    statButton.setText("Deactivate");
+                    statButton.setBackground(Color.red);
+                }
+                if (!rs.getBoolean("status")) {
+                    inactiveRadioButton.setSelected(true);
+                    statButton.setText("Activate");
+                    statButton.setBackground(Color.green);
+                }
+//                backButton.setVisible(true);
+                statButton.setVisible(true);
+                addUserButton.setVisible(false);
+            } else {
+                components.error(this, "Invalid customer Id");
+            }
+
+        } catch (Exception e) {
+           log.errorLog(details, e.getMessage());
+        }
+    }
 
 //    private void numberFilter(KeyEvent evt, JLabel label){
 //        
