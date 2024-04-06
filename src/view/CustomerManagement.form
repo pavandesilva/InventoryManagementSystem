@@ -94,6 +94,7 @@
                               <Component id="emailTxt" alignment="0" pref="223" max="32767" attributes="0"/>
                               <Component id="contactNoTxt" alignment="0" max="32767" attributes="0"/>
                               <Component id="firstnameTxt" alignment="0" max="32767" attributes="0"/>
+                              <Component id="birthDateChooser" alignment="0" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -164,7 +165,10 @@
                               <Component id="jScrollPane1" min="-2" pref="128" max="-2" attributes="0"/>
                               <Component id="addressLabel" min="-2" max="-2" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
-                                  <Component id="birthdayLabel" min="-2" pref="28" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                      <Component id="birthdayLabel" pref="28" max="32767" attributes="0"/>
+                                      <Component id="birthDateChooser" max="32767" attributes="0"/>
+                                  </Group>
                                   <EmptySpace min="-2" pref="62" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="3" attributes="0">
                                       <Component id="emailLabel" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -463,6 +467,8 @@
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="9"/>
           </AuxValues>
+        </Component>
+        <Component class="com.toedter.calendar.JDateChooser" name="birthDateChooser">
         </Component>
       </SubComponents>
     </Container>
