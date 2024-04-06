@@ -266,6 +266,7 @@ public class CustomerManagement extends javax.swing.JFrame {
         updateButton = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         contactNoTxt = new javax.swing.JTextField();
+        birthDateChooser = new com.toedter.calendar.JDateChooser();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("User management");
@@ -468,6 +469,7 @@ public class CustomerManagement extends javax.swing.JFrame {
         jLayeredPane1.setLayer(updateButton, javax.swing.JLayeredPane.DEFAULT_LAYER);
         jLayeredPane1.setLayer(jSeparator1, javax.swing.JLayeredPane.DEFAULT_LAYER);
         jLayeredPane1.setLayer(contactNoTxt, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        jLayeredPane1.setLayer(birthDateChooser, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout jLayeredPane1Layout = new javax.swing.GroupLayout(jLayeredPane1);
         jLayeredPane1.setLayout(jLayeredPane1Layout);
@@ -497,7 +499,8 @@ public class CustomerManagement extends javax.swing.JFrame {
                         .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(emailTxt, javax.swing.GroupLayout.DEFAULT_SIZE, 223, Short.MAX_VALUE)
                             .addComponent(contactNoTxt)
-                            .addComponent(firstnameTxt))))
+                            .addComponent(firstnameTxt)
+                            .addComponent(birthDateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addGap(119, 119, 119)
                 .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jLayeredPane1Layout.createSequentialGroup()
@@ -554,7 +557,9 @@ public class CustomerManagement extends javax.swing.JFrame {
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(addressLabel)
                             .addGroup(jLayeredPane1Layout.createSequentialGroup()
-                                .addComponent(birthdayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(birthdayLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
+                                    .addComponent(birthDateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGap(62, 62, 62)
                                 .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(emailLabel)
@@ -747,6 +752,7 @@ public class CustomerManagement extends javax.swing.JFrame {
     private javax.swing.JLabel addressLabel;
     private javax.swing.JTextArea addressTxt;
     private javax.swing.JButton backButton;
+    private com.toedter.calendar.JDateChooser birthDateChooser;
     private javax.swing.JLabel birthdayLabel;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JLabel contactNoLabel;
