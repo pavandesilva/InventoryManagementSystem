@@ -40,6 +40,64 @@ public class EmployeeManagement extends javax.swing.JFrame {
      * Creates new form AddSystemUser
      */
     
+    public EmployeeManagement() {
+        initComponents();
+        this.log = new StatLogging();
+        otherComponents();
+        generateSystemUserID();
+        startTimer();
+    }
+
+    public EmployeeManagement(UserDetails details) {
+        this.details = details;
+        this.log = new StatLogging();
+        initComponents();
+        otherComponents();
+        generateSystemUserID();
+        startTimer();
+        userLabel.setText(this.details.getFname());
+        log.infoLog(this.details, "Logged into Employee managemnt");
+    }
+
+    private void startTimer() {
+        datetimeLabel.setText(DateFormat.getDateTimeInstance().format(new Date()));
+        Timer t = new Timer(500, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                datetimeLabel.setText(DateFormat.getDateTimeInstance().format(new Date()));
+            }
+        });
+        t.setRepeats(true);
+        t.setCoalesce(true);
+        t.setInitialDelay(0);
+        t.start();
+    }
+
+    private void checkData() {
+        if (departmentCombobox.getSelectedIndex() == -1) {
+            components.error(this, "Select the employee's department.");
+        } else if (employeeIdTxt.getText().equals("")) {
+            components.error(this, "Employeeid cannot be empty.");
+        } else if (firstnameTxt.getText().equals("")) {
+            components.error(this, "Firstname cannot be empty.");
+        } else if (lastnameTxt.getText().equals("")) {
+            components.error(this, "Lastname vannot be empty.");
+        } else if (contactNoTxt.getText().equals("")) {
+            components.error(this, "Contact number cannot be empty.");
+        } else if (contactNoTxt.getText().length() != 11) {
+            components.error(this, "Invalid contact number.");
+        } else if (birthDateChooser.getDate().equals("")) {
+            components.error(this, "Birthday cannot be empty.");
+        } else if (addressTxt.getText().equals("")) {
+            components.error(this, "Address cannot be empty.");
+        } else if (nicTxt.getText().equals("")) {
+            components.error(this, "NIC cannot be empty.");
+        } else if (userTypeCombobox.getSelectedIndex() == -1) {
+            components.error(this, "Usertype cannot be empty.");
+        } else {
+            addUser();
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
