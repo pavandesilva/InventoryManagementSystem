@@ -98,6 +98,147 @@ public class EmployeeManagement extends javax.swing.JFrame {
             addUser();
         }
     }
+    
+    private void setStatus(String s) {
+        try {
+            sql = "UPDATE employee SET status= " + s + " WHERE employeeid='" + rs.getString("employeeid") + "'";
+            DB.addData(sql);
+
+            log.infoLog(details, employeeIdTxt.getText() + "'Employee status updated");
+            components.infoMessage(this, "User's access status successfully changed.");
+            newUserCycle();
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+        }
+    }
+
+    private void addUser() {
+        int stat = 0;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+            Date bday = birthDateChooser.getDate();
+            String dob = sdf.format(bday);
+
+            String depID = null;
+
+            sql = "SELECT deptid FROM department WHERE name='" + departmentCombobox.getSelectedItem().toString() + "'";
+            rs = DB.search(sql);
+            if (rs.next()) {
+                depID = rs.getString("deptid");
+            }
+
+            if (activeRadioButton.isSelected()) {
+                stat = 1;
+            }
+            sql = "INSERT INTO employee (employeeid, deptid, firstname, lastname,address, dob, nic,contactno, type, imagepath, status) VALUES('" + employeeIdTxt.getText() + "' ,'" + depID + "' ,'" + firstnameTxt.getText() + "','" + lastnameTxt.getText() + "' ,'" + addressTxt.getText() + "' ,'" + dob + "' ,'" + nicTxt.getText() + "' ,'" + contactNoTxt.getText() + "' ,'" + userTypeCombobox.getSelectedItem().toString().trim() + "' ,'" + imagepath + "','" + stat + "')";
+            DB.addData(sql);
+            log.infoLog(details, "A new employee is added");
+
+            if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(this, "Setup system login for user?", "Employee added", JOptionPane.YES_NO_OPTION)) {
+                new SetupLogin(details, employeeIdTxt.getText()).setVisible(true);
+            }
+            if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(this, "View employee details report?", "Employee added", JOptionPane.YES_NO_OPTION)) {
+                viewReport();
+            }
+            newUserCycle();
+
+        } catch (Exception e) {
+            components.error(this, e.getMessage());
+            log.errorLog(details, e.getMessage());
+        }
+    }
+
+    private void viewReport() {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+            Date bday = birthDateChooser.getDate();
+            String dob = sdf.format(bday);
+
+            String path = "D:\\projects\\Java\\1stYear\\FinalProjects\\1stYearProject\\src\\reports\\UserDetails.jrxml";
+            JasperReport compileReport = JasperCompileManager.compileReport(path);
+            JREmptyDataSource datasource = new JREmptyDataSource();
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", employeeIdTxt.getText());
+            System.out.println(employeeIdTxt.getText());
+            map.put("fname", firstnameTxt.getText());
+            System.out.println(firstnameTxt.getText());
+            map.put("lname", lastnameTxt.getText());
+            System.out.println(lastnameTxt.getText());
+            map.put("nic", nicTxt.getText());
+            System.out.println(nicTxt.getText());
+            map.put("dob", dob);
+            System.out.println(dob);
+            map.put("contact", contactNoTxt.getText());
+            System.out.println(contactNoTxt.getText());
+            map.put("address", addressTxt.getText());
+            System.out.println(addressTxt.getText());
+            map.put("type", userTypeCombobox.getSelectedItem());
+            System.out.println(userTypeCombobox.getSelectedItem());
+            map.put("dep", departmentCombobox.getSelectedItem());
+            System.out.println(departmentCombobox.getSelectedItem());
+
+            JasperPrint fillReport = JasperFillManager.fillReport(compileReport, map, datasource);
+//            JasperPrint fillReport = JasperFillManager.fillReport(is, map, datasource);
+            JasperViewer.viewReport(fillReport, false);
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+            components.error(this, e.getMessage());
+        }
+    }
+
+    private void searchEmployee() {
+        try {
+//            sql = "SELECT department.name, * FROM employee INNER JOIN department ON deptid = employee.deptid WHERE employeeemployeeid='" + employeeIdTxt.getText() + "'";
+
+            sql = "SELECT department.name, employee.employeeid, employee.deptid, employee.firstname, employee.lastname, employee.address, employee.dob, employee.nic, employee.contactno, employee.type,employee.imagepath, employee.status FROM employee INNER JOIN department ON employee.employeeid=department.deptid WHERE employee.employeeid='" + employeeIdTxt.getText() + "'";
+            rs = DB.search(sql);
+
+            if (rs.next()) {
+                if (!rs.getString("imagepath").equals(" ")) {
+                    String imagpath = rs.getString("imagepath");
+                    File file = new File(imagpath);
+                    Image image = ImageIO.read(file);
+                    image = image.getScaledInstance(imageLabel.getWidth(), imageLabel.getHeight(), Image.SCALE_SMOOTH);
+                    imageLabel.setIcon(new ImageIcon(image));
+                }
+
+                firstnameTxt.setText(rs.getString("firstname"));
+                lastnameTxt.setText(rs.getString("lastname"));
+                contactNoTxt.setText(rs.getString("contactno"));
+                addressTxt.setText(rs.getString("address"));
+                String date = rs.getString("dob");
+//                System.out.println(rs.getString("dob"));
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+                Date bday = sdf.parse(date);
+                birthDateChooser.setDate(bday);
+                nicTxt.setText(rs.getString("nic"));
+                userTypeCombobox.setSelectedItem(rs.getString("type"));
+                departmentCombobox.setSelectedItem(rs.getString("name"));
+
+                if (rs.getBoolean("status")) {
+                    activeRadioButton.setSelected(true);
+                    statButton.setText("Deactivate");
+                    statButton.setBackground(Color.red);
+                }
+                if (!rs.getBoolean("status")) {
+                    inactiveRadioButton.setSelected(true);
+                    statButton.setText("Activate");
+                    statButton.setBackground(Color.green);
+                }
+                backButton.setVisible(true);
+                statButton.setVisible(true);
+                addUserButton.setVisible(false);
+            } else {
+                components.error(this, "Invalid employee Id.");
+            }
+
+        } catch (Exception e) {
+//            e.printStackTrace();
+            log.errorLog(details, e.getMessage());
+        }
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
