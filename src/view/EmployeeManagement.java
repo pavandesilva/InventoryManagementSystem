@@ -239,6 +239,122 @@ public class EmployeeManagement extends javax.swing.JFrame {
         }
     }
 
+    private void update() {
+        try {
+            sql = "SELECT deptid FROM department WHERE name='" + departmentCombobox.getSelectedItem() + "'";
+            rs = DB.search(sql);
+            String depid = "0";
+            if (rs.next()) {
+                depid = rs.getString("deptid").trim();
+            }
+            System.out.println(depid);
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+            System.out.println(birthDateChooser.getDate());
+            Date bday = birthDateChooser.getDate();
+            String dob = sdf.format(bday);
+
+            int status = 0;
+            if (activeRadioButton.isSelected()) {
+                status = 1;
+            }
+
+            sql = "UPDATE employee SET employeeid='" + employeeIdTxt.getText() + "', deptid='" + depid + "', firstname='" + firstnameTxt.getText() + "', lastname='" + lastnameTxt.getText() + "', address='" + addressTxt.getText().trim() + "', dob='" + dob + "', nic='" + nicTxt.getText() + "', contactno='" + contactNoTxt.getText() + "', type='" + userTypeCombobox.getSelectedItem() + "', status='" + status + "' WHERE employeeid='" + employeeIdTxt.getText().trim() + "'";
+            DB.addData(sql);
+
+            log.infoLog(details, employeeIdTxt.getText() + "'s Employee details updated");
+            JOptionPane.showMessageDialog(this, "Item data successfully Updated", "", JOptionPane.INFORMATION_MESSAGE);
+            newUserCycle();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+            log.errorLog(details, e.getMessage());
+        }
+    }
+
+    private void newUserCycle() {
+        try {
+            generateSystemUserID();
+            activeRadioButton.setSelected(true);
+            firstnameTxt.setText(null);
+            lastnameTxt.setText(null);
+            contactNoTxt.setText(null);
+            birthDateChooser.setDate(null);
+            addressTxt.setText(null);
+            nicTxt.setText(null);
+            userTypeCombobox.setSelectedIndex(-1);
+            departmentCombobox.setSelectedIndex(-1);
+            statButton.setVisible(false);
+            addUserButton.setVisible(true);
+            firstnameTxt.setEditable(true);
+            lastnameTxt.setEditable(true);
+            Image img = ImageIO.read(getClass().getResource("data/add.png"));
+            img = img.getScaledInstance(imageLabel.getWidth(), imageLabel.getHeight(), Image.SCALE_SMOOTH);
+            imageLabel.setIcon(new ImageIcon(img));
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+        }
+    }
+
+    private void otherComponents() {
+        try {
+
+            Image img1 = ImageIO.read(getClass().getResource("data/reload.png"));
+            img1 = img1.getScaledInstance(refreshButton.getWidth(), refreshButton.getHeight(), Image.SCALE_SMOOTH);
+            refreshButton.setIcon(new ImageIcon(img1));
+
+            Image img2 = ImageIO.read(getClass().getResource("data/add.png"));
+            img2 = img2.getScaledInstance(imageLabel.getWidth(), imageLabel.getHeight(), Image.SCALE_SMOOTH);
+            imageLabel.setIcon(new ImageIcon(img2));
+
+//            URL path = this.getClass().getResource("data/EMBackground.jpg");
+//            File imageFile = new File(path.getFile());
+//            Image img = ImageIO.read(imageFile);
+//            img = img.getScaledInstance(backgroundLabel.getWidth(), backgroundLabel.getHeight(), Image.SCALE_SMOOTH);
+//            backgroundLabel.setIcon(new ImageIcon(img));
+//            backButton.setVisible(false);
+            backgroundLabel.setVisible(false);
+            statButton.setVisible(false);
+
+            components = new SystemComponents();
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+        }
+    }
+
+    private void generateSystemUserID() {
+        employeeIdTxt.setText("" + components.generateID("employee"));
+        firstnameTxt.grabFocus();
+    }
+
+    private void loadEmployeeId() {
+        try {
+            sql = "SELECT employeeid FROM employee ORDER BY employeeid DESC LIMIT 1;";
+            rs = DB.search(sql);
+            if (rs.next()) {
+                employeeIdTxt.setText("00" + String.valueOf(Integer.valueOf(rs.getString("employeeid")) + 1));
+            }
+            sql = "";
+            rs = null;
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+            JOptionPane.showMessageDialog(this, e.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void setupLogin() {
+        try {
+            sql = "SELECT username FROM login WHERE employeeid='" + employeeIdTxt.getText() + "'";
+            rs = DB.search(sql);
+            if (rs.next()) {
+                components.error(this, "User already has a login.");
+            } else {
+                new SetupLogin(details, employeeIdTxt.getText()).setVisible(true);
+            }
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+            components.error(this, e.getMessage());
+        }
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
