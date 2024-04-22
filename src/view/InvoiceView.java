@@ -50,6 +50,57 @@ import net.sf.jasperreports.view.JasperViewer;
  */
 public class InvoiceView extends javax.swing.JFrame {
 
+    /**
+     * Creates new form InvoiceView
+     *
+     * @param details
+     */
+    public InvoiceView(UserDetails details) {
+        initComponents();
+        this.details = details;
+        this.log = new StatLogging();
+        components = new SystemComponents();
+        userLabel.setText(details.getFname());
+        generateInvoiceID();
+        setdefaultCustomer();
+        othercomponents();
+        startTimer();
+        log.infoLog(details, "Logged into Invoice");
+        itemIdTxt.grabFocus();
+    }
+
+    public InvoiceView() {
+        initComponents();
+        components = new SystemComponents();
+        generateInvoiceID();
+        setdefaultCustomer();
+        othercomponents();
+        startTimer();
+    }
+
+    private void othercomponents() {
+        try {
+            priceList.setVisible(false);
+            itemIdTxt.grabFocus();
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+            components.error(this, e.getMessage());
+        }
+    }
+
+    private void startTimer() {
+        datetimeLabel.setText(DateFormat.getDateTimeInstance().format(new Date()));
+        Timer t = new Timer(500, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                datetimeLabel.setText(DateFormat.getDateTimeInstance().format(new Date()));
+            }
+        });
+        t.setRepeats(true);
+        t.setCoalesce(true);
+        t.setInitialDelay(0);
+        t.start();
+    }
    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
