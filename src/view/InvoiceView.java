@@ -101,6 +101,73 @@ public class InvoiceView extends javax.swing.JFrame {
         t.setInitialDelay(0);
         t.start();
     }
+
+    private void generateInvoiceID() {
+        try {
+            sql = "SELECT invoiceid FROM invoice ORDER BY invoiceid DESC LIMIT 1;";
+            rs = DB.search(sql);
+            if (rs.next()) {
+                invoiceIdTxt.setText(String.valueOf(Integer.valueOf(rs.getString("invoiceid")) + 1));
+            }
+            sql = "";
+            rs = null;
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+            components.error(this, e.getMessage());
+        }
+    }
+
+    private void setdefaultCustomer() {
+        try {
+            sql = "SELECT firstname, lastname FROM customer WHERE customerid = '1'";
+            rs = DB.search(sql);
+
+            if (rs.next()) {
+                customerIdTxt.setText("1");
+                customerNameTxt.setText(rs.getString("firstname") + " " + rs.getString("lastname"));
+            }
+            itemIdTxt.grabFocus();
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+            components.error(this, e.getMessage());
+        }
+    }
+
+    private void rotationToItem() {
+        itemIdTxt.setText(null);
+        itemNameTxt.setText(null);
+        unitPriceTxt.setText(null);
+        stockQtyTxt.setText(null);
+        buyingQtyTxt.setText(null);
+        itemTotalTxt.setText(null);
+        itemDiscountTxt.setText("0");
+        subTotalQtyTxt.setText(null);
+        priceList.clearSelection();
+        priceList.setVisible(false);
+        itemIdTxt.grabFocus();
+    }
+
+        private void rotationToNewInvoice() {
+        DefaultTableModel dtm = (DefaultTableModel) table1.getModel();
+        dtm.setRowCount(0);
+        itemIdTxt.setText("");
+        itemNameTxt.setText("");
+        unitPriceTxt.setText("");
+        stockQtyTxt.setText("");
+        buyingQtyTxt.setText("");
+        itemTotalTxt.setText("");
+        itemDiscountTxt.setText("");
+        subTotalQtyTxt.setText("");
+        invoiceTotalTxt.setText("0");
+        invoiceDiscountTxt.setText("0");
+        netTotalTxt.setText("0");
+        paymentTxt.setText("0");
+        balanceTxt.setText("0");
+        customerIdTxt.setText("");
+        customerNameTxt.setText("");
+        setdefaultCustomer();
+        generateInvoiceID();
+    }
    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
