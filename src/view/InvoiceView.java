@@ -147,7 +147,7 @@ public class InvoiceView extends javax.swing.JFrame {
         itemIdTxt.grabFocus();
     }
 
-        private void rotationToNewInvoice() {
+    private void rotationToNewInvoice() {
         DefaultTableModel dtm = (DefaultTableModel) table1.getModel();
         dtm.setRowCount(0);
         itemIdTxt.setText("");
@@ -168,7 +168,136 @@ public class InvoiceView extends javax.swing.JFrame {
         setdefaultCustomer();
         generateInvoiceID();
     }
-   
+    
+    private void calculateTotalValue() {
+        double total = 0;
+        for (int i = 0; i < table1.getRowCount(); i++) {
+            total += Double.parseDouble(table1.getValueAt(i, 6).toString().trim());
+        }
+        invoiceTotalTxt.setText("" + total);
+        netTotalTxt.setText("" + total);
+    }
+
+    private void searchItem() {
+        try {
+            itemNameTxt.setForeground(Color.BLACK);
+            rs = DB.search("SELECT * FROM item WHERE itemid = '" + itemIdTxt.getText() + "'");
+            DefaultTableModel t = (DefaultTableModel) table1.getModel();
+            int x = t.getRowCount();
+            if (x != 0) {
+                for (int y = 0; y < x; y++) {
+                    if (t.getValueAt(y, 0).equals(itemIdTxt.getText())) {
+                        components.error(this, "Duplicate entries");
+                        break;
+                    } else {
+                        setData();
+                    }
+                }
+            } else {
+                setData();
+            }
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+            components.error(this, e.getMessage());
+        }
+    }
+
+    private void searchCustomer() {
+        try {
+            rs = DB.search("select * from customer where customerid = '" + customerIdTxt.getText() + "'");
+            if (rs.next()) {
+                customerNameTxt.setForeground(Color.black);
+                customerNameTxt.setText(rs.getString("firstname") + " " + rs.getString("lastname"));
+                itemIdTxt.grabFocus();
+            } else {
+                customerNameTxt.setForeground(Color.red);
+                customerNameTxt.setText("Invalid Customer Id, Search again");
+                customerIdTxt.setText("");
+                customerIdTxt.grabFocus();
+            }
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+            components.error(this, e.getMessage());
+        }
+    }
+
+    private void setData() {
+        try {
+            if (rs.next()) {
+                itemNameTxt.setText(rs.getString("name"));
+                stockQtyTxt.setText(rs.getString("qty"));
+                sellingType = rs.getString("sellingtype");
+
+                switch (sellingType) {
+                    case "Pieces":
+                        qtyLabel.setText("QTY");
+                        break;
+
+                    case "by Weight":
+                        qtyLabel.setText("Weight(g)");
+                        break;
+                }
+                rs = DB.search("SELECT * FROM itemprice WHERE itemid='" + itemIdTxt.getText() + "'");
+                Vector<String> a = new Vector();
+                while (rs.next()) {
+                    a.add(rs.getString("sellingprice"));
+                }
+                unitPriceTxt.setText(null);
+                if (a.size() > 1) {
+                    priceList.setVisible(true);
+                    priceList.setListData(a);
+                } else {
+                    unitPriceTxt.setText(a.get(0));
+                    buyingQtyTxt.grabFocus();
+                }
+            } else {
+                itemNameTxt.setForeground(Color.red);
+                itemNameTxt.setText("invalid item ID");
+                itemIdTxt.setText("");
+                itemIdTxt.grabFocus();
+            }
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+        }
+    }
+
+    private void setUnitPrice() {
+        unitPriceTxt.setText(priceList.getSelectedValue());
+        buyingQtyTxt.grabFocus();
+    }
+
+    private void calculateTotal() {
+        if (unitPriceTxt.getText().equals("") || unitPriceTxt.getText().equals("0")) {
+            components.error(this, "Select Unit price from the list.");
+        } else {
+            double unitPrice = Double.parseDouble(unitPriceTxt.getText().trim());
+            double stockQty = Double.parseDouble(stockQtyTxt.getText().trim());
+            if (!buyingQtyTxt.getText().trim().equals("")) {
+                if (sellingType.equals("by Weight")) {
+
+                    Double price = Double.parseDouble(unitPriceTxt.getText());
+                    Double buywht = Double.parseDouble(buyingQtyTxt.getText());
+                    Double cost = (buywht / 1000) * price;
+                    itemTotalTxt.setText(cost.toString());
+                    itemDiscountTxt.setText("0");
+                    itemDiscountTxt.grabFocus();
+                } else {
+                    double buyingQty = Double.parseDouble(buyingQtyTxt.getText().trim());
+                    if (stockQty >= buyingQty) {
+                        itemTotalTxt.setText("" + (unitPrice * buyingQty));
+                        itemDiscountTxt.setText("0");
+                        itemDiscountTxt.grabFocus();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Not enough items in stock");
+                        buyingQtyTxt.setText(stockQtyTxt.getText());
+                        buyingQtyTxt.grabFocus();
+                    }
+                }
+            }
+        }
+    }
+
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
