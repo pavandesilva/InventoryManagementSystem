@@ -21,11 +21,9 @@ public class Login extends javax.swing.JFrame {
     /**
      * Creates new form Login
      */
-<<<<<<< Updated upstream
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
-=======
     public Login() {
         initComponents();
         otherComponents();
@@ -139,10 +137,7 @@ public class Login extends javax.swing.JFrame {
     }
 
     @SuppressWarnings("unchecked")
-<<<<<<< Updated upstream
     // <editor-fold defaultstate="collapsed" desc="Generated Code">
->>>>>>> Stashed changes
-=======
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
 >>>>>>> Stashed changes
     private void initComponents() {
