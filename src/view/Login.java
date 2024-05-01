@@ -24,7 +24,7 @@ public class Login extends javax.swing.JFrame {
 <<<<<<< Updated upstream
     
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
 =======
     public Login() {
         initComponents();
@@ -139,7 +139,11 @@ public class Login extends javax.swing.JFrame {
     }
 
     @SuppressWarnings("unchecked")
+<<<<<<< Updated upstream
     // <editor-fold defaultstate="collapsed" desc="Generated Code">
+>>>>>>> Stashed changes
+=======
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
 >>>>>>> Stashed changes
     private void initComponents() {
 
@@ -310,7 +314,7 @@ public class Login extends javax.swing.JFrame {
 
         pack();
         setLocationRelativeTo(null);
-    }// </editor-fold>                        
+    }// </editor-fold>//GEN-END:initComponents
 
     private void closeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeButtonActionPerformed
         this.dispose();
@@ -362,7 +366,6 @@ public class Login extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
