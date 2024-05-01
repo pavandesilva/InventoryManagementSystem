@@ -355,7 +355,7 @@ public class InvoiceView extends javax.swing.JFrame {
                 DB.addData(invItemSql);
                 DB.addData("UPDATE item SET qty=qty-'" + qty + "'WHERE itemid = '" + itemid + "'");
             }
-//            generateInvoice();
+            generateInvoice();
 
             log.infoLog(details, "New invoice added.");
             rotationToNewInvoice();
