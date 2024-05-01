@@ -297,6 +297,90 @@ public class InvoiceView extends javax.swing.JFrame {
         }
     }
 
+        private void setDataToTable() {
+        if (!itemDiscountTxt.getText().trim().equals("") || !itemDiscountTxt.getText().equals("0")) {
+            subTotalQtyTxt.setText((calDiscount(Double.parseDouble(itemDiscountTxt.getText()), Double.parseDouble(itemTotalTxt.getText()))).toString());
+            DefaultTableModel dtm = (DefaultTableModel) table1.getModel();
+            Vector v = new Vector();
+            v.add(itemIdTxt.getText());
+            v.add(itemNameTxt.getText());
+            if (qtyLabel.getText().equals("QTY")) {
+                v.add(buyingQtyTxt.getText());
+            } else {
+                v.add((Double.parseDouble(buyingQtyTxt.getText().trim())) / 1000);
+                System.out.println((Integer.parseInt(buyingQtyTxt.getText())) / 1000);
+            }
+            v.add(unitPriceTxt.getText());
+            v.add(itemTotalTxt.getText());
+            v.add(itemDiscountTxt.getText());
+            v.add(subTotalQtyTxt.getText());
+            dtm.addRow(v);
+            calculateTotalValue();
+            rotationToItem();
+        }
+    }
+
+    Double calDiscount(Double discount, Double itemtotal) {
+        double sub = (itemtotal - ((discount / 100) * itemtotal));
+        return sub;
+    }
+
+    Double calNettotal(Double total, Double discount) {
+        return (total - discount);
+    }
+
+    private void addInvoice() {
+        try {
+            String invoiceid = invoiceIdTxt.getText().trim();
+            String employeeid = details.getId();
+            String customer = customerIdTxt.getText().trim();
+            String invoTotal = invoiceTotalTxt.getText().trim();
+            String invDiscount = invoiceDiscountTxt.getText().trim();
+            String netTotal = netTotalTxt.getText().trim();
+            String payment = paymentTxt.getText().trim();
+            String date = new SimpleDateFormat("yyyy:MM:dd - HH:mm:ss").format(new Date());
+            String invSql = "INSERT INTO invoice VALUES('" + invoiceid + "','" + employeeid + "','" + customer + "','" + date + "','" + invoTotal + "','" + invDiscount + "','" + netTotal + "','" + payment + "')";
+            DB.addData(invSql);
+            log.infoLog(details, "New invoice added");
+            for (int row = 0; row < table1.getRowCount(); row++) {
+                String itemid = table1.getValueAt(row, 0).toString().trim();
+                String qty = table1.getValueAt(row, 2).toString().trim();
+                String uprice = table1.getValueAt(row, 3).toString().trim();
+                String discount = table1.getValueAt(row, 5).toString().trim();
+                String subtotal = table1.getValueAt(row, 6).toString().trim();
+
+//                System.out.println(invoiceid + "','" + itemid + "','" + qty + "','" + discount);
+                String invItemSql = "INSERT INTO invoiceitem (invoiceid,itemid,unitprice,qty,discount,subtotal) VALUES ('" + invoiceid + "','" + itemid + "','" + uprice + "','" + qty + "','" + discount + "','" + subtotal + "') ";
+
+                DB.addData(invItemSql);
+                DB.addData("UPDATE item SET qty=qty-'" + qty + "'WHERE itemid = '" + itemid + "'");
+            }
+//            generateInvoice();
+
+            log.infoLog(details, "New invoice added.");
+            rotationToNewInvoice();
+
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+            components.error(this, "catch"+e.getMessage());
+        }
+    }
+
+    private void generateInvoice() {
+        try {
+            String path = "D:\\projects\\Java\\1stYear\\FinalProjects\\1stYearProject\\src\\reports\\invoice2.jasper";
+            InputStream is = new FileInputStream(path);
+            Map<String, Object> map = new HashMap<>();
+            map.put("invid", invoiceIdTxt.getText());
+
+            JasperPrint fillReport = JasperFillManager.fillReport(is, map, DB.getNewConnection());
+            JasperViewer.viewReport(fillReport, false);
+
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+            components.error(this, e.getMessage());
+        }
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
