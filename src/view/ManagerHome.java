@@ -30,6 +30,39 @@ import net.sf.jasperreports.view.JasperViewer;
  */
 public class ManagerHome extends javax.swing.JFrame {
 
+    public ManagerHome(UserDetails details) {
+        this.details = details;
+        this.log = new StatLogging();
+        initComponents();
+        otherComponents();
+        userLabel.setText(details.getFname());
+        setSales();
+        startTimer();
+        setDataToTable();
+        log.infoLog(details, "Admin level user logged in");
+    }
+
+    public ManagerHome() {
+        initComponents();
+        otherComponents();
+        setSales();
+        startTimer();
+        setDataToTable();
+    }
+
+    private void otherComponents() {
+        try {
+            URL path = this.getClass().getResource("data/homeBackground.jpg");
+            File imageFile = new File(path.getFile());
+            Image img = ImageIO.read(imageFile);
+            img = img.getScaledInstance(backgroundLabel.getWidth(), backgroundLabel.getHeight(), Image.SCALE_SMOOTH);
+            backgroundLabel.setIcon(new ImageIcon(img));
+
+            components = new SystemComponents();
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+        }
+    }
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
