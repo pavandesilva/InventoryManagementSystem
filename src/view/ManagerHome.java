@@ -65,6 +65,49 @@ public class ManagerHome extends javax.swing.JFrame {
         }
     }
     
+    private void setSales() {
+        try {
+            sql = "SELECT invoice SELECT total+=total";
+            rs = DB.search(sql);
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+        }
+    }
+
+    private void setDataToTable() {
+        try {
+            DefaultTableModel dtm = (DefaultTableModel) jTable1.getModel();
+            sql = "SELECT * FROM item ORDER BY qty ASC LIMIT 10;";
+            rs = DB.search(sql);
+            while (rs.next()) {
+                Vector v = new Vector();
+                v.add(rs.getString("itemid"));
+                v.add(rs.getString("name"));
+                v.add(rs.getString("qty"));
+                dtm.addRow(v);
+            }
+            sql = "";
+            rs = null;
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+
+        }
+    }
+
+    private void startTimer() {
+        datetimeLabel.setText(DateFormat.getDateTimeInstance().format(new Date()));
+        Timer t = new Timer(500, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                datetimeLabel.setText(DateFormat.getDateTimeInstance().format(new Date()));
+            }
+        });
+        t.setRepeats(true);
+        t.setCoalesce(true);
+        t.setInitialDelay(0);
+        t.start();
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
