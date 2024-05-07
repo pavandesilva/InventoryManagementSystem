@@ -4,6 +4,7 @@ import common.DB;
 import common.SystemComponents;
 import common.UserDetails;
 import common.StatLogging;
+import controller.ItemController;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -128,8 +129,7 @@ public class AddItem extends javax.swing.JFrame {
             model.setRowCount(0);
             model = (DefaultTableModel) buyingPricesTable.getModel();
             model.setRowCount(0);
-            sql = "SELECT * FROM item WHERE itemid='" + id + "'";
-            rs = DB.search(sql);
+            rs = ItemController.itemSearch(id);
             if (rs.next()) {
                 itemNameTxt.setText(rs.getString("name"));
                 categoryComboBox.setSelectedItem(rs.getString("category"));
