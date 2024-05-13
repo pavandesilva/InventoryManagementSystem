@@ -1,4 +1,4 @@
-package Frames;
+package view;
 
 import common.DB;
 import common.SystemComponents;

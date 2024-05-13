@@ -5,6 +5,7 @@
         <group name="php">
             <file>file:/D:/GIT/InventoryManagementSystem/src/view/ManagerHome.java</file>
             <file>file:/D:/GIT/InventoryManagementSystem/src/view/AddItem.java</file>
+            <file>file:/D:/GIT/InventoryManagementSystem/src/view/PurchaseOrder.java</file>
             <file>file:/D:/GIT/InventoryManagementSystem/src/controller/HomeController.java</file>
             <file>file:/D:/GIT/InventoryManagementSystem/src/controller/ItemController.java</file>
         </group>
