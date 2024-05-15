@@ -32,7 +32,116 @@ import net.sf.jasperreports.view.JasperViewer;
  */
 public class PurchaseOrder extends javax.swing.JFrame {
 
-    
+    public PurchaseOrder() {
+        initComponents();
+        otherComponents();
+        setPoId();
+        startTimer();
+    }
+
+    public PurchaseOrder(UserDetails details) {
+        this.details = details;
+        this.log = new StatLogging();
+        initComponents();
+        userLabel.setText(details.getFname());
+        otherComponents();
+        setPoId();
+        startTimer();
+//        setDataToTable();
+        logoutButton.setVisible(false);
+        log.infoLog(details, "Logged into purchase order");
+    }
+
+    private void otherComponents() {
+        try {
+//            URL path = this.getClass().getResource("data/grnBackground.jpg");
+//            File imageFile = new File(path.getFile());
+//            img = ImageIO.read(imageFile);
+//            img = img.getScaledInstance(backgroundLabel.getWidth(), backgroundLabel.getHeight(), Image.SCALE_SMOOTH);
+//            backgroundLabel.setIcon(new ImageIcon(img));
+
+            components = new SystemComponents();
+
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+        }
+    }
+
+    private void refresh() {
+        setPoId();
+        itemIdTxt.setText("");
+        itemNameTxt.setText("");
+        qtyTxt.setText("");
+        itemIdTxt.grabFocus();
+        DefaultTableModel dtm = (DefaultTableModel) sTable.getModel();
+        dtm.setRowCount(0);
+//        setDataToTable();
+    }
+
+    private void order() {
+        try {
+            String date = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
+            sql = "INSERT INTO po (poid, employeeid, itemid, qty, date) VALUES('" + poIdTxt.getText() + "', '" + details.getId() + "', '" + itemIdTxt.getText() + "', '" + qtyTxt.getText().trim() + "', '" + date + "')";
+            DB.addData(sql);
+
+            components.infoMessage(this, "Purchase order successfully placed");
+            log.infoLog(details, "New purchase order placed");
+            refresh();
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+            components.error(this, e.getMessage());
+        }
+    }
+
+    private void remove() {
+        try {
+            if (table.getSelectedRow() == (-1)) {
+                components.error(this, "Select an order from the list.");
+            } else {
+                sql = "UPDATE po SET status = '0' WHERE poid = '" + poIdTxt.getText() + "'";
+                DB.addData(sql);
+
+                log.infoLog(details, "Purchase order status changed");
+                components.infoMessage(this, "Purchase order '" + poIdTxt.getText() + "' removed successfully");
+//                setDataToTable();
+            }
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+            components.error(this, e.getMessage());
+        }
+    }
+
+    private void search() {
+        try {
+            sql = "SELECT po.itemid, po.qty, item.name FROM po INNER JOIN item ON item.itemid=po.itemid WHERE poid='" + poIdTxt.getText() + "'";
+            rs = DB.search(sql);
+            if (rs.next()) {
+                itemIdTxt.setText(rs.getString("itemid"));
+                itemNameTxt.setText(rs.getString("name"));
+                qtyTxt.setText(rs.getString("qty"));
+            } else {
+                components.error(this, "Invalid purchase order id.");
+            }
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+            components.error(this, e.getMessage());
+        }
+    }
+
+    private void startTimer() {
+        datetimeLabel.setText(DateFormat.getDateTimeInstance().format(new Date()));
+        Timer t = new Timer(500, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                datetimeLabel.setText(DateFormat.getDateTimeInstance().format(new Date()));
+            }
+        });
+        t.setRepeats(true);
+        t.setCoalesce(true);
+        t.setInitialDelay(0);
+        t.start();
+    }
+
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
