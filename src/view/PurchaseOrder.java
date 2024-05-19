@@ -142,6 +142,44 @@ public class PurchaseOrder extends javax.swing.JFrame {
         t.start();
     }
 
+    private void setDataToTable() {
+        try {
+            sql = "SELECT po.poid, po.itemid, po.qty, po.date, item.name FROM po INNER JOIN item ON po.itemid=item.itemid WHERE po.status =1 ORDER BY poid DESC LIMIT 10 ;";
+            rs = DB.search(sql);
+            
+            
+            DefaultTableModel dtm = (DefaultTableModel) table.getModel();
+            dtm.setRowCount(0);
+            while (rs.next()) {
+                Vector v = new Vector();
+                v.add(rs.getString("poid"));
+                v.add(rs.getString("itemid"));
+                v.add(rs.getString("name"));
+                v.add(rs.getString("date"));
+                v.add(rs.getString("qty"));
+                dtm.addRow(v);
+            }
+
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+            components.error(this, e.getMessage());
+
+        }
+    }
+
+    private void setPoId() {
+        try {
+            sql = "SELECT * FROM po ORDER BY poid DESC LIMIT 1;";
+            rs = DB.search(sql);
+            if (rs.next()) {
+                poIdTxt.setText("" + (Integer.parseInt(rs.getString("poid")) + 1));
+            }
+
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+            components.error(this, e.getMessage());
+        }
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
