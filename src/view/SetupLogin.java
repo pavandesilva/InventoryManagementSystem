@@ -27,7 +27,57 @@ public class SetupLogin extends javax.swing.JFrame {
     /**
      * Creates new form ResetPassword
      */
-   
+    
+     public SetupLogin() {
+        initComponents();
+        otherComponents();
+        this.user = user;
+        this.log = new StatLogging();
+        log.infoLog(user, "Logged into Login setup");
+    }
+    public SetupLogin(UserDetails user) {
+        initComponents();
+        otherComponents();
+        this.user = user;
+        this.log = new StatLogging();
+        log.infoLog(user, "Logged into Login setup");
+    }
+
+    public SetupLogin(UserDetails user, String id) {
+        initComponents();
+        otherComponents();
+        employeeIDTxt.setText(id);
+        employeeIDTxt.setEditable(false);
+        this.user = user;
+        this.log = new StatLogging();
+        log.infoLog(this.user, "Logged into Login setup");
+    }
+
+    private void otherComponents() {
+        try {
+            URL path = this.getClass().getResource("data/EMBackground.jpg");
+            File imageFile = new File(path.getFile());
+            Image img = ImageIO.read(imageFile);
+            img = img.getScaledInstance(backgroundLabel.getWidth(), backgroundLabel.getHeight(), Image.SCALE_SMOOTH);
+            backgroundLabel.setIcon(new ImageIcon(img));
+            components = new SystemComponents();
+            usernameTxt.grabFocus();
+        } catch (Exception e) {
+            log.errorLog(user, e.getMessage());
+        }
+    }
+
+    private void pwCheck() {
+        if (!pwCheck(passwordPw.getText(), confirmPasswordPW.getText())) {
+            JOptionPane.showMessageDialog(this, "Password and Confirm password does not match", "Error", JOptionPane.ERROR_MESSAGE);
+            passwordPw.setEditable(true);
+            passwordPw.setText(null);
+            confirmPasswordPW.setText(null);
+            passwordPw.grabFocus();
+        } else {
+            questionsCombobox.showPopup();
+        }
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
