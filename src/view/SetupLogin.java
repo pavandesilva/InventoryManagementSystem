@@ -78,6 +78,75 @@ public class SetupLogin extends javax.swing.JFrame {
             questionsCombobox.showPopup();
         }
     }
+    
+    
+    boolean pwCheck(String npw, String cpw) {
+        return npw.equals(cpw);
+    }
+
+    private void dataCheck() {
+        if (employeeIDTxt.getText().equals("")) {
+            JOptionPane.showMessageDialog(this, "Username cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
+            employeeIDTxt.grabFocus();
+        } else if (answerTxt.getText().equals("")) {
+            JOptionPane.showMessageDialog(this, "Answer cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
+            answerTxt.grabFocus();
+        } else if (passwordPw.getText().equals("")) {
+            JOptionPane.showMessageDialog(this, "New password cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
+            passwordPw.grabFocus();
+        } else if (confirmPasswordPW.getText().equals("")) {
+            JOptionPane.showMessageDialog(this, "Confirm password cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
+            confirmPasswordPW.grabFocus();
+        } else if (questionsCombobox.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(this, "Select sequrity question", "Error", JOptionPane.ERROR_MESSAGE);
+            questionsCombobox.showPopup();
+        } else if (!passwordPw.getText().equals(confirmPasswordPW.getText())) {
+            JOptionPane.showMessageDialog(this, "Password and Confirm password does not match", "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            addData();
+        }
+    }
+
+    private void addData() {
+        try {
+            String password = passwordPw.getText();
+            password = MD5.getMd5(password);
+            sql = "INSERT INTO login VALUES('" + employeeIDTxt.getText() + "','" + usernameTxt.getText() + "','" + password + "','" + questionsCombobox.getSelectedIndex() + "','" + answerTxt.getText() + "','" + 1 + "')";
+            DB.addData(sql);
+            log.infoLog(user, "New Login created for employee " + employeeIDTxt.getText());
+            JOptionPane.showMessageDialog(this, "Login creation is successful");
+            clearFields();
+            this.dispose();
+        } catch (Exception e) {
+            log.errorLog(user, e.getMessage());
+            components.error(this, e.getMessage());
+        }
+    }
+
+    private void clearFields() {
+        employeeIDTxt.setEditable(true);
+        employeeIDTxt.setText(null);
+        questionsCombobox.setSelectedIndex(-1);
+        answerTxt.setText(null);
+        passwordPw.setText(null);
+        confirmPasswordPW.setText(null);
+    }
+
+    private void checkLogin() {
+        System.out.println("check login");
+        try {
+            sql = "SELECT username FROM login WHERE employeeid='" + employeeIDTxt.getText() + "'";
+            rs = DB.search(sql);
+            if (rs.next()) {
+                components.error(this, "User already has a login.");
+            } else {
+                usernameTxt.grabFocus();
+            }
+        } catch (Exception e) {
+            log.errorLog(user, e.getMessage());
+            components.error(this, e.getMessage());
+        }
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
