@@ -35,6 +35,122 @@ public class SupplierManagement extends javax.swing.JFrame {
     /**
      * Creates new form AddSystemUser
      */
+    
+    public SupplierManagement() {
+        initComponents();
+        otherComponents();
+        generateSupplierID();
+        startTimer();
+    }
+
+    public SupplierManagement(UserDetails details) {
+        initComponents();
+        this.details = details;
+        this.log = new StatLogging();
+        userLabel.setText(details.getFname());
+        otherComponents();
+        generateSupplierID();
+        startTimer();
+        log.infoLog(this.details, "Logged into supplier management");
+    }
+
+    private void startTimer() {
+        datetimeLabel.setText(DateFormat.getDateTimeInstance().format(new Date()));
+        Timer t = new Timer(500, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                datetimeLabel.setText(DateFormat.getDateTimeInstance().format(new Date()));
+            }
+        });
+        t.setRepeats(true);
+        t.setCoalesce(true);
+        t.setInitialDelay(0);
+        t.start();
+    }
+
+    private void checkData() {
+        if (supplierIdTxt.getText().equals("")) {
+            components.error(this, "Employeeid cannot be empty");
+        } else if (supplierNameTxt.getText().equals("")) {
+            components.error(this, "Enter Supplier name(Company name)");
+        } else if (addressTxt.getText().equals("")) {
+            components.error(this, "Address cannot be empty");
+        } else if (contactNoTxt.getText().equals("")) {
+            components.error(this, "Contact no cannot be empty");
+        } else if (itemTable.getRowCount() == 0) {
+            components.error(this, "Selet item(s) this supplier will supply.");
+        } else {
+            addSypplier();
+        }
+    }
+
+    private void setStatus(String s) {
+        try {
+            sql = "UPDATE supplier SET status= " + s + " WHERE supplierid='" + rs.getString("supplierid") + "'";
+            DB.addData(sql);
+            components.infoMessage(this, "Supplier's status successfully changed");
+            newSupplierCycle();
+        } catch (Exception e) {
+            components.error(this, e.getMessage());
+
+        }
+    }
+
+    private void addSypplier() {
+//        int stat = 0;
+        try {
+//            if (activeRadioButton.isSelected()) {
+//                stat = 1;
+//            }
+
+            sql = "INSERT INTO supplier (supplierid, companyname, address, contactno) VALUES ('" + supplierIdTxt.getText() + "','" + supplierNameTxt.getText() + "', '" + addressTxt.getText() + "','" + contactNoTxt.getText() + "')";
+            DB.addData(sql);
+
+            DefaultTableModel dtm = (DefaultTableModel) itemTable.getModel();
+
+            for (int row = 0; row < dtm.getRowCount(); row++) {
+
+                System.out.println(dtm.getValueAt(row, 0).toString());
+                String id = dtm.getValueAt(row, 0).toString();
+
+                sql = "INSERT INTO itemsupplier (supplierid, itemid) VALUES ('" + supplierIdTxt.getText() + "','" + id + "') ";
+                DB.addData(sql);
+            }
+            log.infoLog(details, "Added new supplier");
+            JOptionPane.showMessageDialog(this, "Supplier successfully added.", "", JOptionPane.INFORMATION_MESSAGE);
+            newSupplierCycle();
+        } catch (Exception e) {
+            components.error(this, e.getMessage());
+        }
+    }
+
+    private void updateData() {
+        try {
+            sql = "UPDATE supplier SET companyname='" + supplierNameTxt.getText() + "', address='" + addressTxt.getText() + "', contactno='" + contactNoTxt.getText() + "' WHERE supplierid= '" + supplierIdTxt.getText() + "'";
+            DB.addData(sql);
+
+            DefaultTableModel dtm = (DefaultTableModel) itemTable.getModel();
+
+            sql = " DELETE FROM itemsupplier WHERE supplierid='" + supplierIdTxt.getText() + "'";
+            DB.addData(sql);
+
+            for (int row = 0; row < dtm.getRowCount(); row++) {
+
+                System.out.println(dtm.getValueAt(row, 0).toString());
+                String id = dtm.getValueAt(row, 0).toString();
+
+                sql = "INSERT INTO itemsupplier (supplierid, itemid) VALUES ('" + supplierIdTxt.getText() + "','" + id + "') ";
+                DB.addData(sql);
+                log.infoLog(details, supplierIdTxt.getText() + "'s details updated");
+            }
+            JOptionPane.showMessageDialog(this, "Item data successfully Updated", "", JOptionPane.INFORMATION_MESSAGE);
+            newSupplierCycle();
+        } catch (Exception e) {
+            e.printStackTrace();
+            components.error(this, e.getMessage());
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
