@@ -151,6 +151,62 @@ public class SupplierManagement extends javax.swing.JFrame {
         }
     }
 
+    private void newSupplierCycle() {
+        generateSupplierID();
+        DefaultTableModel dtm = (DefaultTableModel) itemTable.getModel();
+        supplierNameTxt.setText(null);
+        addressTxt.setText(null);
+        activeRadioButton.setSelected(true);
+        contactNoTxt.setText(null);
+        itemIdTxt.setText(null);
+        itemNameTxt.setText(null);
+        dtm.setRowCount(0);
+        addSupplierButton.setVisible(true);
+    }
+
+    private void setData() {
+        try {
+            sql = "SELECT * FROM supplier WHERE supplierid='" + supplierIdTxt.getText() + "'";
+
+            rs = DB.search(sql);
+            if (rs.next()) {
+                supplierNameTxt.setText(rs.getString("companyname"));
+                addressTxt.setText(rs.getString("address"));
+                contactNoTxt.setText(rs.getString("contactno"));
+
+//                if (rs.getBoolean("status")) {
+//                    activeRadioButton.setSelected(true);
+//                    statButton.setText("Deactivate");
+//                    statButton.setBackground(Color.red);
+//                }
+//                if (!rs.getBoolean("status")) {
+//                    inactiveRadioButton.setSelected(true);
+//                    statButton.setText("Activate");
+//                    statButton.setBackground(Color.green);
+//                }
+                addSupplierButton.setVisible(false);
+            } else {
+                components.error(this, "Invalid Supplier Id");
+            }
+            sql = "SELECT item.name, itemsupplier.itemid FROM itemsupplier INNER JOIN item ON itemsupplier.itemid=item.itemid WHERE supplierid='" + supplierIdTxt.getText() + "'";
+            rs = DB.search(sql);
+
+            DefaultTableModel dtm = (DefaultTableModel) itemTable.getModel();
+            dtm.setRowCount(0);
+            while (rs.next()) {
+                Vector v = new Vector();
+                v.add(rs.getString("itemid"));
+                v.add(rs.getString("name"));
+                System.out.println(rs.getString("itemid"));
+                System.out.println(rs.getString("name"));
+                dtm.addRow(v);
+            }
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+            components.error(this, e.getMessage());
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
