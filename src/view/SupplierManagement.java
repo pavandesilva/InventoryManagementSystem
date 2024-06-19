@@ -206,6 +206,93 @@ public class SupplierManagement extends javax.swing.JFrame {
             components.error(this, e.getMessage());
         }
     }
+    
+    
+    private void resetSupplier() {
+        generateSupplierID();
+        supplierNameTxt.setText("");
+        addressTxt.setText("");
+        contactNoTxt.setText("");
+    }
+
+    private void resetItem() {
+        itemIdTxt.setText("");
+        itemNameTxt.setText("");
+    }
+
+    private void addItemToTable() {
+        try {
+            if (itemIdTxt.getText().equals("") || itemNameTxt.getText().equals("")) {
+                components.error(this, "Enter Valid Itemid");
+            } else {
+                Vector v = new Vector();
+                DefaultTableModel dtm = (DefaultTableModel) itemTable.getModel();
+                v.add(itemIdTxt.getText());
+                v.add(itemNameTxt.getText());
+                dtm.addRow(v);
+                itemIdTxt.setText("");
+                itemNameTxt.setText("");
+                itemIdTxt.grabFocus();
+            }
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+        }
+    }
+
+//    private void numberFilter(KeyEvent evt, JLabel label){
+//        
+//        if (evt.getKeyChar() >= 'a' && evt.getKeyChar() <= 'z' || evt.getKeyChar() >= 'A' && evt.getKeyChar() <= 'Z' || evt.getKeyCode()== KeyEvent.VK_BACK_SPACE){
+//            label.setEditable(true);
+//        } else {
+//            label.setEditable(false);
+//        }
+//    }
+    private void otherComponents() {
+        try {
+            Image img1 = ImageIO.read(getClass().getResource("data/reload.png"));
+            img1 = img1.getScaledInstance(refreshItemIdButton.getWidth(), refreshItemIdButton.getHeight(), Image.SCALE_SMOOTH);
+            refreshItemIdButton.setIcon(new ImageIcon(img1));
+
+            Image img2 = ImageIO.read(getClass().getResource("data/reload.png"));
+            img2 = img2.getScaledInstance(refreshSupplierIdButton.getWidth(), refreshSupplierIdButton.getHeight(), Image.SCALE_SMOOTH);
+            refreshSupplierIdButton.setIcon(new ImageIcon(img2));
+
+//            URL path = this.getClass().getResource("data/EMBackground.jpg");
+//            File imageFile = new File(path.getFile());
+//            Image img = ImageIO.read(imageFile);
+//            img = img.getScaledInstance(backgroundLabel.getWidth(), backgroundLabel.getHeight(), Image.SCALE_SMOOTH);
+//            backgroundLabel.setIcon(new ImageIcon(img));
+//            backgroundLabel.setVisible(false);
+//            backButton.setVisible(false);
+            components = new SystemComponents();
+        } catch (Exception e) {
+            log.errorLog(details, e.getMessage());
+            components.error(this, e.getMessage());
+        }
+    }
+
+    private void generateSupplierID() {
+        supplierIdTxt.setText("" + components.generateID("supplier"));
+        supplierNameTxt.grabFocus();
+    }
+
+    private void searchItem() {
+        try {
+            sql = "SELECT name FROM item WHERE itemid='" + itemIdTxt.getText() + "'";
+            rs = DB.search(sql);
+            if (rs.next()) {
+                itemNameTxt.setText(rs.getString("name"));
+                itemNameTxt.grabFocus();
+            } else {
+                components.error(this, "Invalid item id");
+                itemIdTxt.setText("");
+                itemIdTxt.grabFocus();
+            }
+
+        } catch (Exception e) {
+            components.error(this, e.getMessage());
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
